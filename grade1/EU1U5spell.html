@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spelling Game – Everybody Up 1 Unit 5</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #6ec6f5;
+    --grass: #5dba62;
+    --sun: #ffd94a;
+    --bark: #a0522d;
+    --leaf: #3cb44b;
+    --water: #4ab5e3;
+    --rock: #9e9e9e;
+    --bg: #e8f7ff;
+    --card: #ffffff;
+    --accent: #ff7043;
+    --easy: #43a047;
+    --hard: #e53935;
+    --txt: #2c3e50;
+    --shadow: 0 4px 18px rgba(0,0,0,.13);
+    --radius: 18px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(180deg, #b3e5fc 0%, #e8f7ff 60%, #c8e6c9 100%);
+    min-height: 100vh;
+    display: flex; flex-direction: row; align-items: stretch;
+  }
+
+  /* ─── SIDEBAR ─── */
+  #sidebar {
+    width: 130px; min-width: 110px; max-width: 150px;
+    background: linear-gradient(180deg, #1a5276 0%, #21618c 60%, #1a7a4a 100%);
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 18px;
+    padding: 24px 10px;
+    box-shadow: 3px 0 16px rgba(0,0,0,.18);
+    flex-shrink: 0;
+  }
+  #sidebar .sidebar-icon { font-size: 2.4rem; line-height: 1; }
+  #sidebar h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.25rem; color: #fff;
+    text-align: center; line-height: 1.25;
+    text-shadow: 1px 2px 0 rgba(0,0,0,.3);
+    letter-spacing: .5px;
+  }
+  #sidebar .sidebar-divider {
+    width: 60%; height: 2px;
+    background: rgba(255,255,255,.25); border-radius: 2px;
+  }
+  #sidebar .sidebar-meta {
+    font-size: .75rem; color: rgba(255,255,255,.7);
+    text-align: center; line-height: 1.6;
+  }
+  #sidebar .sidebar-meta b { color: #ffd94a; display: block; font-size: .8rem; }
+  /* ─── RIGHT SIDEBAR ─── */
+  #sidebar-right {
+    width: 90px; min-width: 80px;
+    background: linear-gradient(180deg, #1a5276 0%, #21618c 60%, #1a7a4a 100%);
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 10px;
+    padding: 20px 8px;
+    box-shadow: -3px 0 16px rgba(0,0,0,.18);
+    flex-shrink: 0;
+  }
+  #sidebar-right .sr-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: .8rem; color: rgba(255,255,255,.7);
+    text-align: center; letter-spacing: .5px;
+    text-transform: uppercase;
+  }
+  #sidebar-right .sidebar-divider {
+    width: 60%; height: 2px;
+    background: rgba(255,255,255,.25); border-radius: 2px;
+  }
+  .star-item {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    width: 100%;
+  }
+  .star-emoji {
+    font-size: 1.6rem; line-height: 1;
+    filter: grayscale(1) brightness(.6);
+    transition: filter .4s, transform .4s;
+  }
+  .star-emoji.lit {
+    filter: grayscale(0) brightness(1.1) drop-shadow(0 0 6px rgba(255,220,0,.8));
+    transform: scale(1.18);
+    animation: star-pop .4s ease;
+  }
+  @keyframes star-pop {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.4); }
+    100% { transform: scale(1.18); }
+  }
+  .star-count {
+    font-family: 'Fredoka One', cursive;
+    font-size: .65rem; color: rgba(255,255,255,.5);
+    letter-spacing: .3px;
+  }
+  .star-count.lit { color: #ffd94a; }
+
+  /* ─── MAIN AREA ─── */
+  #main {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 14px 10px 14px; overflow-y: auto;
+  }
+
+  /* ─── MODE SELECT ─── */
+  #mode-screen {
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+    max-width: 420px; width: 100%;
+  }
+  .mode-card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 22px 28px; box-shadow: var(--shadow);
+    width: 100%; text-align: center;
+  }
+  .mode-card h2 { font-family:'Fredoka One',cursive; font-size:1.5rem; margin-bottom:8px; color:var(--txt); }
+  .mode-card p  { color:#666; font-size:.9rem; margin-bottom:18px; line-height:1.5; }
+  .btn-easy, .btn-hard {
+    display: inline-block; padding: 14px 36px;
+    border: none; border-radius: 50px; font-family:'Fredoka One',cursive;
+    font-size: 1.2rem; cursor: pointer; transition: transform .15s, box-shadow .15s;
+    box-shadow: 0 4px 0 rgba(0,0,0,.18);
+    color: #fff; text-decoration: none; margin: 5px;
+  }
+  .btn-easy { background: var(--easy); }
+  .btn-hard { background: var(--hard); }
+  .btn-easy:hover, .btn-hard:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(0,0,0,.18); }
+  .btn-easy:active,.btn-hard:active { transform: translateY(1px); box-shadow: 0 2px 0 rgba(0,0,0,.18); }
+
+  /* ─── GAME SCREEN ─── */
+  #game-screen { display:none; flex-direction:column; align-items:center; width:100%; max-width:520px; gap:10px; }
+
+  /* picture card */
+  .pic-card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 10px 16px; box-shadow: var(--shadow);
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    width: 100%;
+  }
+  #word-picture { width:190px; height:155px; object-fit:contain; border-radius:12px; }
+  .pic-hint { font-size:.8rem; color:#888; }
+
+  /* feedback */
+  #feedback {
+    font-family:'Fredoka One',cursive; font-size:1.15rem;
+    min-height:1.6rem; text-align:center; transition: all .3s;
+  }
+  #feedback.correct { color:#2e7d32; }
+  #feedback.wrong   { color:#c62828; }
+
+  /* ─── EASY MODE: letter boxes ─── */
+  #easy-input-area {
+    display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+    padding: 6px;
+  }
+  .letter-box {
+    width: 40px; height: 48px;
+    border: 3px solid #90caf9; border-radius: 10px;
+    background: #fff; text-align: center;
+    font-family: 'Fredoka One', cursive; font-size: 1.4rem; color: var(--txt);
+    outline: none; caret-color: transparent;
+    text-transform: lowercase;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .letter-box:focus { border-color: #1976d2; box-shadow: 0 0 0 3px rgba(25,118,210,.2); }
+  .letter-box.filled { background: #e3f2fd; }
+  .letter-box.correct-letter { background: #c8e6c9 !important; border-color: #388e3c; }
+  .letter-box.wrong-letter   { background: #ffcdd2 !important; border-color: #c62828; }
+
+  /* ─── HARD MODE: single text input ─── */
+  #hard-input-area { width: 100%; display: flex; justify-content: center; }
+  #hard-input {
+    width: 260px; padding: 14px 20px;
+    border: 3px solid #90caf9; border-radius: 14px;
+    font-family: 'Fredoka One', cursive; font-size: 1.6rem;
+    text-align: center; text-transform: lowercase;
+    outline: none; box-shadow: 0 2px 6px rgba(0,0,0,.1);
+    background: #fff; color: var(--txt);
+    transition: border-color .15s;
+  }
+  #hard-input:focus { border-color: #1976d2; }
+
+  /* submit */
+  #submit-btn {
+    padding: 11px 40px;
+    background: linear-gradient(135deg,#42a5f5,#1565c0);
+    color: #fff; border: none; border-radius: 50px;
+    font-family: 'Fredoka One', cursive; font-size: 1.15rem;
+    cursor: pointer; box-shadow: 0 4px 0 #0d47a1;
+    transition: transform .15s, box-shadow .15s;
+    letter-spacing: .5px;
+  }
+  #submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #0d47a1; }
+  #submit-btn:active { transform: translateY(1px); box-shadow: 0 2px 0 #0d47a1; }
+
+  /* ─── KEYBOARD ─── */
+  #keyboard {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    background: rgba(255,255,255,.55); border-radius: var(--radius);
+    padding: 10px 10px; box-shadow: var(--shadow); width: 100%;
+  }
+  .key-row { display: flex; gap: 5px; flex-wrap: nowrap; justify-content: center; }
+  .key {
+    width: 36px; height: 38px; border-radius: 8px;
+    background: linear-gradient(180deg,#fff 0%,#e3ecf9 100%);
+    border: 2px solid #b0c4de; box-shadow: 0 3px 0 #8fa7cb;
+    font-family: 'Fredoka One', cursive; font-size: 1rem; color: #2c3e50;
+    cursor: pointer; transition: transform .1s, box-shadow .1s;
+    display: flex; align-items: center; justify-content: center;
+    user-select: none;
+  }
+  .key:hover { background: linear-gradient(180deg,#e3f2fd,#bbdefb); }
+  .key:active { transform: translateY(2px); box-shadow: 0 1px 0 #8fa7cb; }
+  .key-backspace {
+    width: 60px; font-size: .8rem;
+    background: linear-gradient(180deg,#fff0f0,#ffcdd2);
+    border-color: #ef9a9a; box-shadow: 0 3px 0 #e57373;
+    color: #c62828;
+  }
+  .key-backspace:hover { background: linear-gradient(180deg,#ffebee,#ef9a9a); }
+
+  /* ─── WIN SCREEN ─── */
+  #win-screen {
+    display: none; flex-direction: column; align-items: center;
+    gap: 18px; text-align: center; max-width: 420px; width: 100%;
+  }
+  #trophy {
+    font-size: 90px; animation: trophy-bounce 1s ease infinite alternate;
+    filter: drop-shadow(0 6px 18px rgba(255,200,0,.5));
+  }
+  @keyframes trophy-bounce {
+    from { transform: translateY(0) scale(1); }
+    to   { transform: translateY(-12px) scale(1.06); }
+  }
+  #win-screen h2 {
+    font-family: 'Fredoka One', cursive; font-size: 2rem;
+    color: #1a5276; text-shadow: 1px 2px 0 #aed6f1;
+  }
+  #win-screen p { color: #555; font-size: 1rem; }
+  .win-btns { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
+  .btn-play-again, .btn-home {
+    padding: 13px 26px; border-radius: 50px; border: none;
+    font-family: 'Fredoka One', cursive; font-size: 1.1rem;
+    cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,.18);
+    transition: transform .15s, box-shadow .15s; color: #fff;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-play-again { background: linear-gradient(135deg,#43a047,#2e7d32); box-shadow: 0 4px 0 #1b5e20; }
+  .btn-home       { background: linear-gradient(135deg,#42a5f5,#1565c0); box-shadow: 0 4px 0 #0d47a1; }
+  .btn-play-again:hover,.btn-home:hover { transform:translateY(-2px); }
+
+  /* ─── CONFETTI ─── */
+  #confetti-canvas {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 999;
+  }
+
+  /* ─── SVG PICTURES ─── */
+  .svg-pic { display:none; }
+
+  @media(max-width:480px){
+    #sidebar, #sidebar-right { width: 70px; min-width: 60px; }
+    #sidebar h1 { font-size: 1rem; }
+    .star-emoji { font-size: 1.3rem; }
+    .key { width: 28px; height: 32px; font-size: .78rem; }
+    .key-backspace { width: 44px; }
+    .letter-box { width: 34px; height: 42px; font-size: 1.1rem; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sidebar-icon">🌳</div>
+  <h1>Spelling Time!</h1>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-meta">
+    <b>Everybody Up 1</b>
+    Unit 5<br>The Park
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main">
+
+<!-- MODE SELECT -->
+<div id="mode-screen">
+  <div class="mode-card">
+    <h2>Choose Your Mode</h2>
+    <p>Practice spelling the Unit 5 park words. Choose how you want to play!</p>
+    <button class="btn-easy" onclick="startGame('easy')">⭐ Easy Mode</button>
+    <button class="btn-hard" onclick="startGame('hard')">🔥 Hard Mode</button>
+  </div>
+  <div class="mode-card" style="padding:18px 24px;">
+    <h2 style="font-size:1.1rem;">How to Play</h2>
+    <p style="margin-bottom:0;">
+      <b>Easy:</b> Letter boxes show you how many letters there are.<br>
+      <b>Hard:</b> One big box — you're on your own!<br><br>
+      Look at the picture, type the word, then hit <b>Submit</b>.
+      Get it right to move on. Get it wrong and it comes back!
+    </p>
+  </div>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="game-screen">
+  <div class="pic-card">
+    <div id="word-picture" style="width:220px;height:180px;"></div>
+    <div class="pic-hint">What is this? 👀</div>
+  </div>
+
+  <div id="feedback"></div>
+
+  <!-- Easy input -->
+  <div id="easy-input-area"></div>
+  <!-- Hard input -->
+  <div id="hard-input-area" style="display:none">
+    <input id="hard-input" type="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="type here…" maxlength="20">
+  </div>
+
+  <button id="submit-btn" onclick="checkAnswer()">✔ Submit</button>
+
+  <div id="keyboard">
+    <div class="key-row" id="row1"></div>
+    <div class="key-row" id="row2"></div>
+    <div class="key-row" id="row3"></div>
+  </div>
+</div>
+
+<!-- WIN SCREEN -->
+<div id="win-screen">
+  <div id="trophy">🏆</div>
+  <h2>Amazing Job! 🎉</h2>
+  <p>You spelled all 8 words correctly!</p>
+  <div class="win-btns">
+    <button class="btn-play-again" onclick="resetGame()">▶ Play Again</button>
+    <a class="btn-home" href="index.html">🏠 Home</a>
+  </div>
+</div>
+
+</div><!-- end #main -->
+
+<!-- RIGHT SIDEBAR -->
+<div id="sidebar-right">
+  <div class="sr-title">Progress</div>
+  <div class="sidebar-divider"></div>
+  <div id="star-list"></div>
+</div>
+
+<script>
+// ─── VOCABULARY ───────────────────────────────────────────────
+const WORDS = [
+  { word: 'park',   emoji: '🏞️',  svg: makePark   },
+  { word: 'nature', emoji: '🌿',  svg: makeNature },
+  { word: 'flower', emoji: '🌸',  svg: makeFlower },
+  { word: 'tree',   emoji: '🌲',  svg: makeTree   },
+  { word: 'rock',   emoji: '🪨',  svg: makeRock   },
+  { word: 'hill',   emoji: '⛰️',  svg: makeHill   },
+  { word: 'river',  emoji: '🏞',  svg: makeRiver  },
+  { word: 'lake',   emoji: '🏔️',  svg: makeLake   },
+];
+
+// ─── SVG PICTURE FUNCTIONS ────────────────────────────────────
+function svgWrap(content, bg='#e8f7ff') {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 180" style="width:220px;height:180px;border-radius:12px;">
+  <defs>
+    <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#64b5f6"/><stop offset="100%" stop-color="#bbdefb"/></linearGradient>
+    <linearGradient id="grassGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#66bb6a"/><stop offset="100%" stop-color="#388e3c"/></linearGradient>
+    <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4fc3f7"/><stop offset="100%" stop-color="#0288d1"/></linearGradient>
+    <linearGradient id="rockGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#cfd8dc"/><stop offset="100%" stop-color="#78909c"/></linearGradient>
+    <linearGradient id="trunkGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#6d4c41"/><stop offset="100%" stop-color="#a1887f"/></linearGradient>
+  </defs>
+  <rect width="220" height="180" fill="${bg}" rx="12"/>
+  ${content}
+  </svg>`;
+}
+
+// ── PARK: iconic park scene – bench front-and-centre, two big trees, path ──
+function makePark() {
+  return svgWrap(`
+  <!-- sky -->
+  <rect width="220" height="115" fill="url(#skyGrad)" rx="12"/>
+  <!-- sun -->
+  <circle cx="190" cy="26" r="22" fill="#FFE066"/>
+  <circle cx="190" cy="26" r="16" fill="#FFD600"/>
+  <!-- ground -->
+  <rect x="0" y="112" width="220" height="68" fill="url(#grassGrad)" rx="0"/>
+  <!-- footpath -->
+  <path d="M75 180 Q90 150 95 130 Q100 115 110 113 Q120 115 125 130 Q130 150 145 180Z" fill="#d4a373"/>
+  <!-- left tree trunk -->
+  <rect x="22" y="72" width="16" height="50" fill="url(#trunkGrad)" rx="4"/>
+  <!-- left tree canopy – layered circles -->
+  <circle cx="30" cy="60" r="32" fill="#2e7d32"/>
+  <circle cx="18" cy="72" r="20" fill="#388e3c"/>
+  <circle cx="44" cy="68" r="22" fill="#43a047"/>
+  <circle cx="30" cy="48" r="22" fill="#4caf50"/>
+  <!-- right tree trunk -->
+  <rect x="182" y="78" width="16" height="44" fill="url(#trunkGrad)" rx="4"/>
+  <!-- right tree canopy -->
+  <circle cx="190" cy="66" r="28" fill="#2e7d32"/>
+  <circle cx="178" cy="75" r="18" fill="#388e3c"/>
+  <circle cx="202" cy="72" r="20" fill="#43a047"/>
+  <circle cx="190" cy="55" r="20" fill="#4caf50"/>
+  <!-- park bench – seat -->
+  <rect x="72" y="122" width="76" height="10" fill="#8d6e63" rx="3"/>
+  <!-- bench back -->
+  <rect x="72" y="110" width="76" height="9" fill="#a1887f" rx="3"/>
+  <!-- bench legs -->
+  <rect x="78" y="132" width="7" height="16" fill="#6d4c41" rx="2"/>
+  <rect x="135" y="132" width="7" height="16" fill="#6d4c41" rx="2"/>
+  <!-- bench seat slats -->
+  <line x1="88" y1="122" x2="88" y2="132" stroke="#6d4c41" stroke-width="1.5"/>
+  <line x1="110" y1="122" x2="110" y2="132" stroke="#6d4c41" stroke-width="1.5"/>
+  <line x1="132" y1="122" x2="132" y2="132" stroke="#6d4c41" stroke-width="1.5"/>
+  <!-- flowers in grass -->
+  <circle cx="58" cy="130" r="5" fill="#f06292"/><circle cx="58" cy="125" r="3" fill="#e91e63"/>
+  <circle cx="160" cy="133" r="5" fill="#ffb74d"/><circle cx="160" cy="128" r="3" fill="#ff8f00"/>
+  <circle cx="46" cy="145" r="4" fill="#ce93d8"/><circle cx="170" cy="148" r="4" fill="#81d4fa"/>
+  <!-- cloud left -->
+  <ellipse cx="75" cy="28" rx="28" ry="14" fill="white" opacity=".92"/>
+  <ellipse cx="58" cy="33" rx="18" ry="12" fill="white" opacity=".92"/>
+  <ellipse cx="92" cy="33" rx="18" ry="12" fill="white" opacity=".92"/>
+  `, '#bbdefb');
+}
+
+// ── NATURE: lush scene showing sun + plants + butterfly = "nature" ──
+function makeNature() {
+  return svgWrap(`
+  <!-- sky -->
+  <rect width="220" height="105" fill="url(#skyGrad)" rx="12"/>
+  <!-- ground -->
+  <rect x="0" y="103" width="220" height="77" fill="url(#grassGrad)"/>
+  <!-- big sun with rays -->
+  <circle cx="110" cy="42" r="30" fill="#FFE066"/>
+  <circle cx="110" cy="42" r="22" fill="#FFD600"/>
+  <line x1="110" y1="4"  x2="110" y2="0"  stroke="#FFD600" stroke-width="4" stroke-linecap="round"/>
+  <line x1="110" y1="80" x2="110" y2="84" stroke="#FFD600" stroke-width="4" stroke-linecap="round"/>
+  <line x1="72"  y1="42" x2="68"  y2="42" stroke="#FFD600" stroke-width="4" stroke-linecap="round"/>
+  <line x1="148" y1="42" x2="152" y2="42" stroke="#FFD600" stroke-width="4" stroke-linecap="round"/>
+  <line x1="83"  y1="15" x2="80"  y2="12" stroke="#FFD600" stroke-width="3" stroke-linecap="round"/>
+  <line x1="137" y1="15" x2="140" y2="12" stroke="#FFD600" stroke-width="3" stroke-linecap="round"/>
+  <line x1="83"  y1="69" x2="80"  y2="72" stroke="#FFD600" stroke-width="3" stroke-linecap="round"/>
+  <line x1="137" y1="69" x2="140" y2="72" stroke="#FFD600" stroke-width="3" stroke-linecap="round"/>
+  <!-- tall grass blades -->
+  <path d="M30 103 Q25 75 32 60" stroke="#2e7d32" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M44 103 Q50 70 42 52" stroke="#388e3c" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M175 103 Q180 72 172 58" stroke="#2e7d32" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M190 103 Q185 74 193 60" stroke="#388e3c" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <!-- big leaf left -->
+  <ellipse cx="55" cy="92" rx="28" ry="13" fill="#43a047" transform="rotate(-30,55,92)"/>
+  <line x1="55" y1="103" x2="43" y2="82" stroke="#2e7d32" stroke-width="2.5"/>
+  <!-- big leaf right -->
+  <ellipse cx="166" cy="90" rx="28" ry="13" fill="#388e3c" transform="rotate(30,166,90)"/>
+  <line x1="166" y1="103" x2="178" y2="82" stroke="#2e7d32" stroke-width="2.5"/>
+  <!-- mushroom left -->
+  <rect x="83" y="128" width="8" height="18" fill="#ffe0b2" rx="2"/>
+  <ellipse cx="87" cy="128" rx="14" ry="9" fill="#e53935"/>
+  <circle cx="82" cy="126" r="2.5" fill="white"/><circle cx="91" cy="124" r="2" fill="white"/><circle cx="87" cy="122" r="2" fill="white"/>
+  <!-- mushroom right -->
+  <rect x="128" y="132" width="7" height="14" fill="#ffe0b2" rx="2"/>
+  <ellipse cx="132" cy="132" rx="12" ry="8" fill="#ef6c00"/>
+  <circle cx="127" cy="130" r="2" fill="white"/><circle cx="136" cy="128" r="2" fill="white"/>
+  <!-- butterfly -->
+  <ellipse cx="110" cy="108" rx="14" ry="9" fill="#ab47bc" transform="rotate(-15,110,108)"/>
+  <ellipse cx="122" cy="112" rx="11" ry="7" fill="#ce93d8" transform="rotate(-15,122,112)"/>
+  <ellipse cx="98"  cy="112" rx="11" ry="7" fill="#ce93d8" transform="rotate(15,98,112)"/>
+  <line x1="110" y1="108" x2="110" y2="102" stroke="#4a148c" stroke-width="1.5"/>
+  <circle cx="109" cy="101" r="1.5" fill="#4a148c"/>
+  <circle cx="112" cy="101" r="1.5" fill="#4a148c"/>
+  `, '#e1f8e1');
+}
+
+// ── FLOWER: single large flower, dead-centre, impossible to misread ──
+function makeFlower() {
+  return svgWrap(`
+  <!-- sky bg -->
+  <rect width="220" height="180" fill="#fffde7" rx="12"/>
+  <!-- ground -->
+  <rect x="0" y="140" width="220" height="40" fill="url(#grassGrad)"/>
+  <!-- stem -->
+  <path d="M110 138 Q108 120 110 95" stroke="#388e3c" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <!-- left leaf -->
+  <path d="M110 118 Q80 108 72 90 Q90 95 110 118Z" fill="#43a047"/>
+  <!-- right leaf -->
+  <path d="M110 108 Q140 96 150 78 Q132 86 110 108Z" fill="#43a047"/>
+  <!-- petals – 8 large rounded petals -->
+  <ellipse cx="110" cy="52" rx="14" ry="28" fill="#f48fb1"/>
+  <ellipse cx="110" cy="52" rx="14" ry="28" fill="#f06292" transform="rotate(45,110,70)"/>
+  <ellipse cx="110" cy="52" rx="14" ry="28" fill="#f48fb1" transform="rotate(90,110,70)"/>
+  <ellipse cx="110" cy="52" rx="14" ry="28" fill="#f06292" transform="rotate(135,110,70)"/>
+  <ellipse cx="110" cy="52" rx="14" ry="28" fill="#f48fb1" transform="rotate(180,110,70)"/>
+  <ellipse cx="110" cy="52" rx="14" ry="28" fill="#f06292" transform="rotate(225,110,70)"/>
+  <ellipse cx="110" cy="52" rx="14" ry="28" fill="#f48fb1" transform="rotate(270,110,70)"/>
+  <ellipse cx="110" cy="52" rx="14" ry="28" fill="#f06292" transform="rotate(315,110,70)"/>
+  <!-- centre -->
+  <circle cx="110" cy="70" r="22" fill="#ffd600"/>
+  <circle cx="110" cy="70" r="15" fill="#ffab00"/>
+  <!-- centre dots -->
+  <circle cx="103" cy="65" r="2.5" fill="#e65100" opacity=".7"/>
+  <circle cx="117" cy="65" r="2.5" fill="#e65100" opacity=".7"/>
+  <circle cx="110" cy="76" r="2.5" fill="#e65100" opacity=".7"/>
+  <circle cx="103" cy="76" r="2" fill="#e65100" opacity=".5"/>
+  <circle cx="117" cy="76" r="2" fill="#e65100" opacity=".5"/>
+  <!-- small background flowers -->
+  <circle cx="38" cy="148" r="8" fill="#ce93d8"/><circle cx="38" cy="148" r="5" fill="#9c27b0"/>
+  <circle cx="180" cy="150" r="7" fill="#81d4fa"/><circle cx="180" cy="150" r="4" fill="#0288d1"/>
+  <line x1="38" y1="156" x2="38" y2="175" stroke="#388e3c" stroke-width="3"/>
+  <line x1="180" y1="157" x2="180" y2="175" stroke="#388e3c" stroke-width="3"/>
+  `, '#fffde7');
+}
+
+// ── TREE: single massive tree filling the frame ──
+function makeTree() {
+  return svgWrap(`
+  <!-- sky -->
+  <rect width="220" height="180" fill="url(#skyGrad)" rx="12"/>
+  <!-- ground -->
+  <rect x="0" y="138" width="220" height="42" fill="url(#grassGrad)"/>
+  <!-- ground shadow -->
+  <ellipse cx="110" cy="144" rx="55" ry="10" fill="rgba(0,0,0,.12)"/>
+  <!-- trunk with roots -->
+  <path d="M94 138 Q90 155 82 165" stroke="#5d4037" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M126 138 Q130 155 138 165" stroke="#5d4037" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <rect x="96" y="88" width="28" height="52" fill="url(#trunkGrad)" rx="5"/>
+  <!-- bark texture lines -->
+  <path d="M100 95 Q102 110 100 125" stroke="#5d4037" stroke-width="1.5" fill="none" opacity=".5"/>
+  <path d="M110 92 Q112 108 110 128" stroke="#5d4037" stroke-width="1.5" fill="none" opacity=".4"/>
+  <path d="M120 95 Q118 112 120 126" stroke="#5d4037" stroke-width="1.5" fill="none" opacity=".5"/>
+  <!-- canopy – layered for depth -->
+  <circle cx="110" cy="88" r="68" fill="#1b5e20" opacity=".4"/>
+  <circle cx="84"  cy="96" r="38" fill="#2e7d32"/>
+  <circle cx="136" cy="96" r="38" fill="#2e7d32"/>
+  <circle cx="110" cy="78" r="50" fill="#388e3c"/>
+  <circle cx="92"  cy="70" r="34" fill="#43a047"/>
+  <circle cx="128" cy="72" r="32" fill="#43a047"/>
+  <circle cx="110" cy="60" r="38" fill="#4caf50"/>
+  <circle cx="110" cy="50" r="26" fill="#66bb6a"/>
+  <!-- highlight -->
+  <ellipse cx="96" cy="46" rx="14" ry="9" fill="rgba(255,255,255,.18)" transform="rotate(-10,96,46)"/>
+  <!-- bird on branch -->
+  <path d="M148 82 Q152 76 158 80" stroke="#1a237e" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <circle cx="158" cy="80" r="4" fill="#283593"/>
+  <path d="M155 77 Q160 71 165 75" stroke="#ffc107" stroke-width="2" fill="none"/>
+  <!-- cloud -->
+  <ellipse cx="44" cy="22" rx="28" ry="13" fill="white" opacity=".85"/>
+  <ellipse cx="28" cy="27" rx="18" ry="11" fill="white" opacity=".85"/>
+  <ellipse cx="60" cy="27" rx="18" ry="11" fill="white" opacity=".85"/>
+  `, '#c8e6c9');
+}
+
+// ── ROCK: one bold rock, front and centre, unambiguous ──
+function makeRock() {
+  return svgWrap(`
+  <!-- sky -->
+  <rect width="220" height="180" fill="url(#skyGrad)" rx="12"/>
+  <!-- ground -->
+  <rect x="0" y="128" width="220" height="52" fill="url(#grassGrad)"/>
+  <!-- small background rocks -->
+  <ellipse cx="38"  cy="138" rx="20" ry="13" fill="#90a4ae"/>
+  <ellipse cx="38"  cy="134" rx="18" ry="11" fill="#b0bec5"/>
+  <ellipse cx="185" cy="142" rx="16" ry="10" fill="#90a4ae"/>
+  <ellipse cx="185" cy="138" rx="14" ry="9"  fill="#b0bec5"/>
+  <!-- MAIN big rock – shadow -->
+  <ellipse cx="113" cy="152" rx="72" ry="14" fill="rgba(0,0,0,.18)"/>
+  <!-- main rock body -->
+  <path d="M42 148 Q38 108 60 86 Q80 68 110 65 Q140 68 162 86 Q184 106 180 148Z" fill="#78909c"/>
+  <path d="M46 146 Q42 110 63 90 Q82 72 110 69 Q138 72 158 90 Q178 108 176 146Z" fill="url(#rockGrad)"/>
+  <!-- highlight on rock -->
+  <ellipse cx="88" cy="88" rx="26" ry="14" fill="rgba(255,255,255,.28)" transform="rotate(-15,88,88)"/>
+  <!-- crack lines -->
+  <path d="M105 80 L118 105 L108 130" stroke="#546e7a" stroke-width="2.5" fill="none" opacity=".6" stroke-linecap="round"/>
+  <path d="M130 88 L142 110" stroke="#607d8b" stroke-width="2" fill="none" opacity=".5" stroke-linecap="round"/>
+  <path d="M82 92 L74 118" stroke="#607d8b" stroke-width="2" fill="none" opacity=".4" stroke-linecap="round"/>
+  <!-- moss patches -->
+  <ellipse cx="72"  cy="118" rx="14" ry="7"  fill="#66bb6a" opacity=".7"/>
+  <ellipse cx="150" cy="110" rx="10" ry="5"  fill="#43a047" opacity=".6"/>
+  <ellipse cx="110" cy="142" rx="8"  cy="4"  fill="#81c784" opacity=".5"/>
+  <!-- small pebbles at base -->
+  <ellipse cx="60"  cy="153" rx="9" ry="5" fill="#b0bec5"/>
+  <ellipse cx="160" cy="155" rx="7" ry="4" fill="#cfd8dc"/>
+  <ellipse cx="130" cy="158" rx="5" ry="3" fill="#90a4ae"/>
+  `, '#e0f2f1');
+}
+
+// ── HILL: wide smooth hill taking up lower 2/3 of frame ──
+function makeHill() {
+  return svgWrap(`
+  <!-- sky -->
+  <rect width="220" height="180" fill="url(#skyGrad)" rx="12"/>
+  <!-- distant hill -->
+  <ellipse cx="170" cy="145" rx="110" ry="60" fill="#a5d6a7"/>
+  <!-- main hill – large and clear -->
+  <ellipse cx="80" cy="175" rx="145" ry="90" fill="#2e7d32"/>
+  <ellipse cx="80" cy="168" rx="142" ry="85" fill="#388e3c"/>
+  <ellipse cx="80" cy="162" rx="138" ry="78" fill="#4caf50"/>
+  <!-- sunlit top highlight -->
+  <ellipse cx="60" cy="115" rx="60" ry="20" fill="rgba(255,255,255,.15)" transform="rotate(-8,60,115)"/>
+  <!-- winding path up hill -->
+  <path d="M10 180 Q30 158 55 142 Q80 126 95 115 Q108 106 115 99" stroke="#d4a373" stroke-width="9" fill="none" stroke-linecap="round" opacity=".85"/>
+  <path d="M10 180 Q30 158 55 142 Q80 126 95 115 Q108 106 115 99" stroke="#e8c49a" stroke-width="5" fill="none" stroke-linecap="round" opacity=".7"/>
+  <!-- tree on hill -->
+  <rect x="120" y="78" width="10" height="26" fill="url(#trunkGrad)" rx="3"/>
+  <circle cx="125" cy="66" r="22" fill="#1b5e20"/>
+  <circle cx="114" cy="74" r="14" fill="#2e7d32"/>
+  <circle cx="136" cy="72" r="14" fill="#2e7d32"/>
+  <circle cx="125" cy="57" r="16" fill="#388e3c"/>
+  <!-- small tree -->
+  <rect x="162" y="102" width="7" height="18" fill="url(#trunkGrad)" rx="2"/>
+  <circle cx="166" cy="94" r="15" fill="#2e7d32"/>
+  <circle cx="166" cy="86" r="11" fill="#43a047"/>
+  <!-- flowers scattered on hill -->
+  <circle cx="48"  cy="128" r="5" fill="#f48fb1"/><circle cx="48" cy="123" r="3" fill="#e91e63"/>
+  <circle cx="68"  cy="118" r="4" fill="#fff176"/><circle cx="68" cy="114" r="2.5" fill="#f9a825"/>
+  <circle cx="90"  cy="112" r="4" fill="#f48fb1"/>
+  <circle cx="35"  cy="142" r="3" fill="#fff176"/>
+  <!-- sun -->
+  <circle cx="186" cy="26" r="22" fill="#ffe066"/>
+  <circle cx="186" cy="26" r="16" fill="#ffd600"/>
+  <!-- cloud -->
+  <ellipse cx="60"  cy="24" rx="30" ry="13" fill="white" opacity=".9"/>
+  <ellipse cx="43"  cy="29" rx="20" ry="11" fill="white" opacity=".9"/>
+  <ellipse cx="78"  cy="29" rx="20" ry="11" fill="white" opacity=".9"/>
+  `, '#e3f2fd');
+}
+
+// ── RIVER: wide river flowing left-to-right across the middle ──
+function makeRiver() {
+  return svgWrap(`
+  <!-- sky -->
+  <rect width="220" height="180" fill="url(#skyGrad)" rx="12"/>
+  <!-- far bank grass -->
+  <rect x="0" y="60" width="220" height="28" fill="#66bb6a"/>
+  <!-- near bank grass -->
+  <rect x="0" y="128" width="220" height="52" fill="url(#grassGrad)"/>
+  <!-- RIVER band – the clear key feature -->
+  <rect x="0" y="76" width="220" height="56" fill="url(#waterGrad)"/>
+  <!-- river surface shimmer -->
+  <path d="M10 88  Q55 82 100 88  Q145 94 210 88"  stroke="rgba(255,255,255,.5)" stroke-width="2.5" fill="none"/>
+  <path d="M10 100 Q55 94 100 100 Q145 106 210 100" stroke="rgba(255,255,255,.4)" stroke-width="2" fill="none"/>
+  <path d="M10 112 Q55 106 100 112 Q145 118 210 112" stroke="rgba(255,255,255,.3)" stroke-width="2" fill="none"/>
+  <!-- riverbank edge highlights -->
+  <path d="M0 76 Q55 70 110 76 Q165 82 220 76" stroke="#b3e5fc" stroke-width="3" fill="none"/>
+  <path d="M0 132 Q55 126 110 132 Q165 138 220 132" stroke="#a5d6a7" stroke-width="3" fill="none"/>
+  <!-- rocks in river -->
+  <ellipse cx="60"  cy="104" rx="10" ry="6" fill="#78909c"/>
+  <ellipse cx="60"  cy="102" rx="9"  ry="5" fill="#b0bec5"/>
+  <ellipse cx="155" cy="96"  rx="8"  ry="5" fill="#78909c"/>
+  <ellipse cx="155" cy="94"  rx="7"  ry="4" fill="#b0bec5"/>
+  <!-- far bank: trees -->
+  <rect x="25"  y="30" width="12" height="34" fill="url(#trunkGrad)" rx="3"/>
+  <circle cx="31"  cy="22" r="24" fill="#2e7d32"/>
+  <circle cx="20"  cy="30" r="16" fill="#388e3c"/>
+  <circle cx="42"  cy="28" r="18" fill="#43a047"/>
+  <rect x="170" y="34" width="10" height="28" fill="url(#trunkGrad)" rx="3"/>
+  <circle cx="175" cy="26" r="20" fill="#2e7d32"/>
+  <circle cx="165" cy="32" r="13" fill="#388e3c"/>
+  <circle cx="185" cy="30" r="14" fill="#43a047"/>
+  <!-- near bank: flowers -->
+  <circle cx="100" cy="142" r="6" fill="#f48fb1"/><circle cx="100" cy="136" r="4" fill="#e91e63"/>
+  <line x1="100" y1="146" x2="100" y2="158" stroke="#388e3c" stroke-width="3"/>
+  <circle cx="145" cy="145" r="5" fill="#fff176"/>
+  <line x1="145" y1="150" x2="145" y2="162" stroke="#388e3c" stroke-width="3"/>
+  <!-- duck -->
+  <ellipse cx="108" cy="100" rx="13" ry="8" fill="white"/>
+  <circle  cx="119" cy="96"  r="7"    fill="white"/>
+  <ellipse cx="123" cy="97"  rx="5"   ry="3" fill="#ffa726"/>
+  <circle  cx="121" cy="93"  r="2"    fill="#333"/>
+  <!-- cloud -->
+  <ellipse cx="130" cy="20" rx="28" ry="12" fill="white" opacity=".9"/>
+  <ellipse cx="114" cy="25" rx="18" ry="10" fill="white" opacity=".9"/>
+  <ellipse cx="148" cy="25" rx="18" ry="10" fill="white" opacity=".9"/>
+  `, '#e1f5fe');
+}
+
+// ── LAKE: wide oval lake surrounded by grass, mountains behind ──
+function makeLake() {
+  return svgWrap(`
+  <!-- sky -->
+  <rect width="220" height="180" fill="url(#skyGrad)" rx="12"/>
+  <!-- mountains -->
+  <polygon points="0,105 40,42 80,105"   fill="#546e7a"/>
+  <polygon points="35,105 82,28 130,105" fill="#607d8b"/>
+  <polygon points="90,105 140,38 190,105" fill="#546e7a"/>
+  <polygon points="155,105 195,52 220,105" fill="#455a64"/>
+  <!-- snow caps -->
+  <polygon points="40,42  34,60  46,60"  fill="white"/>
+  <polygon points="82,28  74,50  90,50"  fill="white"/>
+  <polygon points="140,38 133,56 147,56" fill="white"/>
+  <polygon points="195,52 190,66 200,66" fill="white"/>
+  <!-- ground surround -->
+  <ellipse cx="110" cy="152" rx="112" ry="38" fill="#388e3c"/>
+  <ellipse cx="110" cy="148" rx="110" ry="34" fill="#4caf50"/>
+  <!-- LAKE – large and clear -->
+  <ellipse cx="110" cy="148" rx="86"  ry="30" fill="#0277bd"/>
+  <ellipse cx="110" cy="145" rx="83"  ry="27" fill="url(#waterGrad)"/>
+  <!-- lake shimmer -->
+  <path d="M40 145 Q110 135 180 145" stroke="rgba(255,255,255,.5)" stroke-width="2" fill="none"/>
+  <path d="M52 152 Q110 144 168 152" stroke="rgba(255,255,255,.35)" stroke-width="1.5" fill="none"/>
+  <!-- mountain reflection in lake -->
+  <polygon points="60,148 82,138 100,148" fill="#546e7a" opacity=".3"/>
+  <polygon points="95,148 122,133 148,148" fill="#607d8b" opacity=".3"/>
+  <!-- left tree -->
+  <rect x="14" y="100" width="10" height="32" fill="url(#trunkGrad)" rx="3"/>
+  <circle cx="19" cy="90" r="20" fill="#1b5e20"/>
+  <circle cx="10" cy="98" r="13" fill="#2e7d32"/>
+  <circle cx="28" cy="96" r="14" fill="#388e3c"/>
+  <circle cx="19" cy="80" r="14" fill="#43a047"/>
+  <!-- right tree -->
+  <rect x="196" y="106" width="10" height="28" fill="url(#trunkGrad)" rx="3"/>
+  <circle cx="201" cy="96"  r="18" fill="#1b5e20"/>
+  <circle cx="193" cy="103" r="12" fill="#2e7d32"/>
+  <circle cx="209" cy="101" r="13" fill="#388e3c"/>
+  <circle cx="201" cy="87"  r="13" fill="#43a047"/>
+  <!-- duck on lake -->
+  <ellipse cx="78"  cy="150" rx="12" ry="7" fill="white"/>
+  <circle  cx="88"  cy="146" r="6"   fill="white"/>
+  <ellipse cx="92"  cy="147" rx="5"  ry="2.5" fill="#ffa726"/>
+  <circle  cx="90"  cy="143" r="1.8" fill="#222"/>
+  <!-- swan on lake -->
+  <ellipse cx="142" cy="153" rx="14" ry="8" fill="white"/>
+  <path d="M153 150 Q162 140 157 148" stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <circle  cx="157" cy="147" r="4.5" fill="white"/>
+  <ellipse cx="158" cy="149" rx="4"  ry="2" fill="#ffa726"/>
+  <circle  cx="156" cy="145" r="1.5" fill="#333"/>
+  `, '#b3e5fc');
+}
+
+// ─── KEYBOARD LAYOUT ──────────────────────────────────────────
+const rows = [
+  ['a','b','c','d','e','f','g','h','i'],
+  ['j','k','l','m','n','o','p','q','r'],
+  ['s','t','u','v','w','x','y','z','⌫'],
+];
+
+function buildKeyboard() {
+  rows.forEach((letters, i) => {
+    const row = document.getElementById(`row${i+1}`);
+    letters.forEach(l => {
+      const btn = document.createElement('button');
+      btn.className = 'key' + (l==='⌫'?' key-backspace':'');
+      btn.textContent = l;
+      btn.addEventListener('click', () => pressKey(l));
+      row.appendChild(btn);
+    });
+  });
+}
+
+// ─── STATE ────────────────────────────────────────────────────
+let mode = 'easy';
+let queue = [];         // words still to get right
+let currentWord = '';
+let totalCorrect = 0;
+let focusedBox = 0;     // for easy mode
+
+function shuffle(arr) {
+  let a = [...arr];
+  for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function startGame(m) {
+  mode = m;
+  queue = shuffle([...WORDS]);
+  totalCorrect = 0;
+  document.getElementById('mode-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'flex';
+  document.getElementById('win-screen').style.display = 'none';
+  buildStars();
+  nextWord();
+}
+
+function buildStars() {
+  const list = document.getElementById('star-list');
+  list.innerHTML = '';
+  list.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px;width:100%';
+  WORDS.forEach((w, i) => {
+    const item = document.createElement('div');
+    item.className = 'star-item';
+    item.innerHTML = `<div class="star-emoji" id="star-${i}">⭐</div>`;
+    list.appendChild(item);
+  });
+}
+
+function lightStar(index) {
+  const el = document.getElementById(`star-${index}`);
+  if (el) { el.classList.add('lit'); }
+}
+
+function updateProgress() {
+  // stars are lit individually on correct answer — nothing extra needed here
+}
+
+function resetGame() {
+  document.getElementById('win-screen').style.display = 'none';
+  document.getElementById('mode-screen').style.display = 'flex';
+  stopConfetti();
+}
+
+function nextWord() {
+  if (queue.length === 0) { showWin(); return; }
+  const item = queue[0];
+  currentWord = item.word;
+
+  // render SVG picture
+  const pic = document.getElementById('word-picture');
+  pic.innerHTML = item.svg();
+
+  clearFeedback();
+  if (mode === 'easy') buildEasyBoxes(currentWord.length);
+  else clearHardInput();
+}
+
+// ─── EASY MODE ────────────────────────────────────────────────
+function buildEasyBoxes(len) {
+  const area = document.getElementById('easy-input-area');
+  area.style.display = 'flex';
+  document.getElementById('hard-input-area').style.display = 'none';
+  area.innerHTML = '';
+  for (let i=0;i<len;i++) {
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.maxLength = 1;
+    inp.className = 'letter-box';
+    inp.dataset.index = i;
+    inp.autocomplete='off'; inp.autocorrect='off'; inp.spellcheck=false;
+    inp.addEventListener('input', onBoxInput);
+    inp.addEventListener('keydown', onBoxKeydown);
+    inp.addEventListener('focus', () => focusedBox = parseInt(inp.dataset.index));
+    area.appendChild(inp);
+  }
+  // focus first box
+  setTimeout(()=> { const boxes = getBoxes(); if(boxes[0]) {boxes[0].focus(); focusedBox=0;} }, 50);
+}
+
+function getBoxes() {
+  return Array.from(document.querySelectorAll('.letter-box'));
+}
+
+function onBoxInput(e) {
+  const inp = e.target;
+  const idx = parseInt(inp.dataset.index);
+  // keep only one alpha char
+  let val = inp.value.replace(/[^a-zA-Z]/g,'').toLowerCase().slice(-1);
+  inp.value = val;
+  inp.classList.toggle('filled', val!=='');
+  if (val && idx < currentWord.length-1) {
+    getBoxes()[idx+1].focus();
+    focusedBox = idx+1;
+  }
+}
+
+function onBoxKeydown(e) {
+  const idx = parseInt(e.target.dataset.index);
+  if (e.key==='Backspace') {
+    if (e.target.value==='') {
+      if (idx>0) { const prev=getBoxes()[idx-1]; prev.value=''; prev.classList.remove('filled'); prev.focus(); focusedBox=idx-1; }
+    } else { e.target.value=''; e.target.classList.remove('filled'); }
+    e.preventDefault();
+  }
+  if (e.key==='Enter') checkAnswer();
+}
+
+// ─── HARD MODE ────────────────────────────────────────────────
+function clearHardInput() {
+  document.getElementById('easy-input-area').style.display = 'none';
+  document.getElementById('hard-input-area').style.display = 'flex';
+  const inp = document.getElementById('hard-input');
+  inp.value = '';
+  inp.addEventListener('keydown', e=>{ if(e.key==='Enter') checkAnswer(); });
+  setTimeout(()=>inp.focus(),50);
+}
+
+// ─── KEYBOARD PRESS ───────────────────────────────────────────
+function pressKey(letter) {
+  if (mode === 'easy') {
+    const boxes = getBoxes();
+    if (letter === '⌫') {
+      // backspace on current or previous
+      const cur = boxes[focusedBox];
+      if (cur && cur.value) {
+        cur.value = ''; cur.classList.remove('filled');
+      } else if (focusedBox > 0) {
+        const prev = boxes[focusedBox-1];
+        prev.value=''; prev.classList.remove('filled');
+        prev.focus(); focusedBox--;
+      }
+    } else {
+      // type into focused box
+      if (focusedBox < boxes.length) {
+        boxes[focusedBox].value = letter;
+        boxes[focusedBox].classList.add('filled');
+        if (focusedBox < boxes.length-1) { focusedBox++; boxes[focusedBox].focus(); }
+      }
+    }
+  } else {
+    const inp = document.getElementById('hard-input');
+    if (letter === '⌫') {
+      inp.value = inp.value.slice(0,-1);
+    } else {
+      if (inp.value.length < 20) inp.value += letter;
+    }
+    inp.focus();
+  }
+}
+
+// ─── CHECK ANSWER ─────────────────────────────────────────────
+function checkAnswer() {
+  let typed = '';
+  if (mode === 'easy') {
+    typed = getBoxes().map(b=>b.value).join('').toLowerCase();
+  } else {
+    typed = document.getElementById('hard-input').value.toLowerCase().trim();
+  }
+
+  if (typed === currentWord) {
+    showCorrect();
+    // find original WORDS index to light the right star
+    const wordIndex = WORDS.findIndex(w => w.word === currentWord);
+    lightStar(wordIndex);
+    totalCorrect++;
+    queue.shift();
+    setTimeout(()=>{
+      clearFeedback();
+      nextWord();
+    }, 900);
+  } else {
+    showWrong();
+    // move current word to end of queue
+    const item = queue.shift();
+    queue.push(item);
+    setTimeout(()=>{
+      clearFeedback();
+      if (mode==='easy') buildEasyBoxes(currentWord.length);
+      else clearHardInput();
+      nextWord();
+    }, 1000);
+  }
+}
+
+function showCorrect() {
+  const fb = document.getElementById('feedback');
+  fb.textContent = '✅ Correct! Great job!';
+  fb.className = 'correct';
+  if (mode==='easy') {
+    getBoxes().forEach(b=>{ b.classList.add('correct-letter'); b.disabled=true; });
+  }
+}
+
+function showWrong() {
+  const fb = document.getElementById('feedback');
+  fb.textContent = `❌ Try again! (${currentWord})`;
+  fb.className = 'wrong';
+  if (mode==='easy') {
+    getBoxes().forEach(b=>{ b.classList.add('wrong-letter'); b.disabled=true; });
+  }
+}
+
+function clearFeedback() {
+  const fb = document.getElementById('feedback');
+  fb.textContent = '';
+  fb.className = '';
+  if (mode==='easy') getBoxes().forEach(b=>{ b.classList.remove('correct-letter','wrong-letter','filled'); b.disabled=false; b.value=''; });
+}
+
+// ─── WIN ──────────────────────────────────────────────────────
+function showWin() {
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('win-screen').style.display = 'flex';
+  startConfetti();
+}
+
+// ─── CONFETTI ─────────────────────────────────────────────────
+let confettiFrame;
+function startConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const colors = ['#ff7043','#ffd94a','#5dba62','#42a5f5','#ab47bc','#ef5350','#ffeb3b'];
+  const pieces = Array.from({length:140},()=>({
+    x: Math.random()*canvas.width,
+    y: Math.random()*-canvas.height,
+    r: 6+Math.random()*8,
+    color: colors[Math.floor(Math.random()*colors.length)],
+    rot: Math.random()*360,
+    speed: 2+Math.random()*4,
+    rotSpeed: (Math.random()-.5)*6,
+    shape: Math.random()<.5?'rect':'circle',
+    w: 8+Math.random()*10,
+    h: 5+Math.random()*6,
+  }));
+
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color;
+      if(p.shape==='circle'){
+        ctx.beginPath(); ctx.arc(0,0,p.r,0,2*Math.PI); ctx.fill();
+      } else {
+        ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      }
+      ctx.restore();
+      p.y += p.speed;
+      p.rot += p.rotSpeed;
+      if(p.y > canvas.height+20) { p.y=-20; p.x=Math.random()*canvas.width; }
+    });
+    confettiFrame = requestAnimationFrame(draw);
+  }
+  draw();
+  setTimeout(stopConfetti, 6000);
+}
+
+function stopConfetti() {
+  if (confettiFrame) { cancelAnimationFrame(confettiFrame); confettiFrame=null; }
+  const canvas = document.getElementById('confetti-canvas');
+  canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+buildKeyboard();
+</script>
+</body>
+</html>
