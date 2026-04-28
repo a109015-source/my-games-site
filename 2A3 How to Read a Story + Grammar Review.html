@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class Review Game — 2A3</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: Arial, sans-serif;
+  background: #0D0B2A;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-start;
+  padding: 1.5rem 1rem 3rem;
+  color: #fff;
+}
+
+h1 { font-size: 24px; font-weight: 700; color: #C4B5FD; margin-bottom: 0.25rem; letter-spacing: 0.5px; }
+.subtitle { font-size: 14px; color: #6B7280; margin-bottom: 1.5rem; }
+
+#counters { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+.counter-box {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px; padding: 6px 18px;
+  text-align: center; min-width: 80px;
+}
+.counter-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+.counter-val   { font-size: 22px; font-weight: 700; color: #facc15; }
+
+#slot-wrap {
+  background: rgba(255,255,255,0.04);
+  border: 1.5px solid rgba(108,63,197,0.5);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  width: 100%; max-width: 540px;
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+#slot-label { font-size: 13px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.75rem; }
+#slot-window {
+  background: #1a1240;
+  border: 2px solid #6C3FC5;
+  border-radius: 12px;
+  height: 72px; overflow: hidden; position: relative;
+  margin-bottom: 1rem;
+}
+#slot-reel { position: absolute; left: 0; right: 0; transition: top 0.05s linear; }
+.slot-item {
+  height: 72px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; font-weight: 700; color: #fff;
+}
+#spin-btn {
+  background: #6C3FC5; color: #fff;
+  border: none; border-radius: 10px;
+  padding: 12px 36px; font-size: 16px; font-weight: 700;
+  cursor: pointer; font-family: Arial, sans-serif;
+  transition: background 0.15s, transform 0.1s;
+}
+#spin-btn:hover:not(:disabled) { background: #4A2890; }
+#spin-btn:active:not(:disabled) { transform: scale(0.97); }
+#spin-btn:disabled { background: #3D2E6B; color: #666; cursor: default; }
+
+#q-card {
+  background: rgba(255,255,255,0.04);
+  border: 1.5px solid rgba(255,159,28,0.4);
+  border-radius: 16px;
+  padding: 1.5rem 1.75rem;
+  width: 100%; max-width: 540px;
+  margin-bottom: 1.25rem;
+  display: none;
+}
+#q-category { font-size: 11px; color: #FF9F1C; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; font-weight: 700; }
+#q-text { font-size: 18px; font-weight: 600; color: #fff; line-height: 1.55; margin-bottom: 1.25rem; min-height: 52px; }
+#choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+.choice {
+  background: #1a1240;
+  border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: 10px; padding: 12px 10px;
+  font-size: 15px; color: #e2e8f0;
+  cursor: pointer; text-align: center;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  font-family: Arial, sans-serif; font-weight: 500; line-height: 1.4;
+}
+.choice:hover:not(:disabled) { background: #2D2060; border-color: #6C3FC5; }
+.choice:active:not(:disabled) { transform: scale(0.97); }
+.choice.correct { background: #1a3a1a; border-color: #3B6D11; color: #86efac; }
+.choice.wrong   { background: #3a1a1a; border-color: #A32D2D; color: #fca5a5; }
+.choice:disabled { cursor: default; }
+
+#feedback-text { min-height: 40px; font-size: 14px; color: #94a3b8; text-align: center; line-height: 1.5; margin-bottom: 0.5rem; }
+#chosen-name-display { text-align: center; font-size: 15px; color: #C4B5FD; margin-bottom: 0.5rem; }
+
+#stats-screen { display: none; width: 100%; max-width: 540px; text-align: center; }
+#stats-screen h2 { font-size: 26px; color: #C4B5FD; margin-bottom: 0.5rem; }
+#stats-screen .big { font-size: 52px; font-weight: 700; color: #facc15; line-height: 1; margin-bottom: 0.25rem; }
+#stats-screen .sub { font-size: 14px; color: #94a3b8; margin-bottom: 1.5rem; }
+#stats-table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 14px; }
+#stats-table th { background: rgba(108,63,197,0.35); color: #C4B5FD; padding: 8px 12px; text-align: left; font-weight: 700; }
+#stats-table td { padding: 7px 12px; border-bottom: 1px solid rgba(255,255,255,0.06); color: #e2e8f0; }
+#stats-table tr:nth-child(even) td { background: rgba(255,255,255,0.03); }
+.tick  { color: #86efac; font-weight: 700; }
+.cross { color: #fca5a5; font-weight: 700; }
+
+#play-again-btn {
+  background: #6C3FC5; color: #fff;
+  border: none; border-radius: 10px;
+  padding: 13px 40px; font-size: 17px; font-weight: 700;
+  cursor: pointer; font-family: Arial, sans-serif;
+  transition: background 0.15s;
+}
+#play-again-btn:hover { background: #4A2890; }
+</style>
+</head>
+<body>
+
+<h1>🎡 Class Review Game</h1>
+<p class="subtitle">How to Read a Story &amp; Adverbs — 2A3</p>
+
+<div id="counters">
+  <div class="counter-box">
+    <div class="counter-label">Students left</div>
+    <div class="counter-val" id="students-left">26</div>
+  </div>
+  <div class="counter-box">
+    <div class="counter-label">Correct</div>
+    <div class="counter-val" id="correct-count" style="color:#86efac">0</div>
+  </div>
+  <div class="counter-box">
+    <div class="counter-label">Wrong</div>
+    <div class="counter-val" id="wrong-count" style="color:#fca5a5">0</div>
+  </div>
+</div>
+
+<div id="slot-wrap">
+  <div id="slot-label">Spin to pick a student</div>
+  <div id="slot-window"><div id="slot-reel"></div></div>
+  <button id="spin-btn">🎰 Spin!</button>
+</div>
+
+<div id="chosen-name-display"></div>
+
+<div id="q-card">
+  <div id="q-category"></div>
+  <div id="q-text"></div>
+  <div id="choices"></div>
+  <div id="feedback-text"></div>
+</div>
+
+<div id="stats-screen">
+  <h2>🏆 Round Complete!</h2>
+  <div class="big" id="final-score"></div>
+  <div class="sub" id="final-sub"></div>
+  <table id="stats-table">
+    <thead><tr><th>Student</th><th>Question</th><th>Result</th></tr></thead>
+    <tbody id="stats-body"></tbody>
+  </table>
+  <button id="play-again-btn" onclick="resetGame()">Play Again</button>
+</div>
+
+<script>
+// ── NAMES ─────────────────────────────────────────────────────────────────────
+const ALL_NAMES = ["Ethan","Bruce","Marie","Miffy","Charlotte","Maksim","Rroy","Mia","Enya","Yun Yun","Albert","Ruby","Mandy","George","Andy","Asta","Mila","Rex","Mimi","Rainbow","Keenu","Perry","Owen","Sean","Ollie","Leo"];
+
+// ── QUESTION BANK (55 questions) ──────────────────────────────────────────────
+const ALL_QUESTIONS = [
+
+  // ── STORY: Genre & Structure ─────────────────────────────────────────────
+  { cat:"Story: Genre", q:"What type of text is 'How to Read a Story'?", choices:["A fairy tale","A procedural text","A poem","A news report"], ans:1 },
+  { cat:"Story: Genre", q:"A procedural text tells you how to do what?", choices:["How to feel","How to do or make something","How to write a story","How to sing a song"], ans:1 },
+  { cat:"Story: Genre", q:"How is 'How to Read a Story' organised?", choices:["By characters","By colours","By numbered steps","By questions and answers"], ans:2 },
+  { cat:"Story: Genre", q:"How many steps are in 'How to Read a Story'?", choices:["5","8","10","12"], ans:2 },
+  { cat:"Story: Genre", q:"Who wrote 'How to Read a Story'?", choices:["Mark Siegel","Kate Messner","Dr Seuss","Roald Dahl"], ans:1 },
+  { cat:"Story: Genre", q:"What does the title 'How to Read a Story' tell you about the book?", choices:["It is a scary story","It tells you the steps to read a story","It is about a library","It is about a dragon"], ans:1 },
+
+  // ── STORY: Steps & Content ──────────────────────────────────────────────
+  { cat:"Story: Steps", q:"What is Step 1?", choices:["Find a cozy spot","Find a reading buddy","Find a story","Open the book"], ans:2 },
+  { cat:"Story: Steps", q:"What is Step 2?", choices:["Find a story","Find a reading buddy","Open the book","Say 'The End'"], ans:1 },
+  { cat:"Story: Steps", q:"What is Step 3?", choices:["Find a reading buddy","Look at the cover","Find a cozy reading spot","Read loudly"], ans:2 },
+  { cat:"Story: Steps", q:"What do you do in Step 4?", choices:["Open the book","Find a buddy","Look at the book's cover","Say 'The End'"], ans:2 },
+  { cat:"Story: Steps", q:"What do you do in Step 5?", choices:["Find a story","Pause and predict","Open the book","Read the ending"], ans:2 },
+  { cat:"Story: Steps", q:"In Step 6, what do you do when characters talk?", choices:["Read quietly","Stop reading","Say it in a voice to match the character","Skip the words"], ans:2 },
+  { cat:"Story: Steps", q:"In Step 7, what should you do with the book?", choices:["Put it away","Hold it so your buddy can see the pictures","Read it backwards","Close it"], ans:1 },
+  { cat:"Story: Steps", q:"What does Step 8 say to do with words you don't know?", choices:["Skip them","Ask someone to read for you","Sound them out or look at the pictures","Start a new book"], ans:2 },
+  { cat:"Story: Steps", q:"In Step 9, what should you do at exciting parts?", choices:["Read more slowly","Make your voice sound exciting","Stop and take a break","Read very quietly"], ans:1 },
+  { cat:"Story: Steps", q:"What does Step 10 tell you to say when the book is over?", choices:['"Once upon a time"','"The End"','"Happily ever after"','"To be continued"'], ans:1 },
+  { cat:"Story: Steps", q:"What does the book say to do if it was a really good story?", choices:["Find a new story","Tell a friend about it","Go back to the beginning and read again","Write your own story"], ans:2 },
+  { cat:"Story: Steps", q:"In Step 8, what do you look at to help you understand a word?", choices:["The table of contents","The back cover","The pictures","The title"], ans:2 },
+
+  // ── STORY: Vocabulary ───────────────────────────────────────────────────
+  { cat:"Story: Vocabulary", q:"What does 'cozy' mean?", choices:["Cold and wet","Warm and comfortable","Very loud","Far away"], ans:1 },
+  { cat:"Story: Vocabulary", q:"What does 'steaming' describe?", choices:["Something very cold","Something letting off hot steam","Something very quiet","Something broken"], ans:1 },
+  { cat:"Story: Vocabulary", q:"What is a 'clue'?", choices:["A colour","Something that helps you guess or find an answer","A type of book","A loud sound"], ans:1 },
+  { cat:"Story: Vocabulary", q:"What does 'pause' mean?", choices:["Run fast","Stop for a short time","Shout loudly","Read backwards"], ans:1 },
+  { cat:"Story: Vocabulary", q:"What does 'disturb' mean?", choices:["Help someone","Interrupt or bother someone","Read carefully","Speak quietly"], ans:1 },
+  { cat:"Story: Vocabulary", q:"The robot's parts 'rattled'. What does rattled mean?", choices:["Were very still","Made a shaking, clattering noise","Were very shiny","Were very hot"], ans:1 },
+  { cat:"Story: Vocabulary", q:"The princess 'tackled' the dragon. What does tackled mean?", choices:["Ran away from","Grabbed and brought down","Talked to","Fed some food to"], ans:1 },
+  { cat:"Story: Vocabulary", q:"What does 'predict' mean?", choices:["Guess what will happen next","Draw a picture","Read very fast","Find a new book"], ans:0 },
+
+  // ── STORY: Comprehension ───────────────────────────────────────────────
+  { cat:"Story: Comprehension", q:"The book says 'If you don't agree, go back to Step 1.' What does this mean?", choices:["The book is too hard","Your buddy doesn't like reading","You and your buddy don't both like the book","The book has no pictures"], ans:2 },
+  { cat:"Story: Comprehension", q:"Step 3 says outside is fun but NOT if it is what?", choices:["Too windy","Very cold or very hot","Raining a little","Sunny"], ans:1 },
+  { cat:"Story: Comprehension", q:"According to Step 7, what happens if your buddy can't see the pictures?", choices:["They fall asleep","They get impatient","They laugh","They run away"], ans:1 },
+  { cat:"Story: Comprehension", q:"What kind of text are the numbered steps in the book?", choices:["A recipe","Instructions in order","A poem","A list of characters"], ans:1 },
+  { cat:"Story: Comprehension", q:"Why does the book say to make your voice exciting in Step 9?", choices:["To wake up your buddy","To match the exciting parts of the story","Because you are angry","Because the book is boring"], ans:1 },
+  { cat:"Story: Comprehension", q:"A reading buddy does NOT have to be a person. What else can a buddy be?", choices:["A chair","An animal or pet","A book","A teacher"], ans:1 },
+
+  // ── GRAMMAR: Adverbs — what they do ───────────────────────────────────
+  { cat:"Grammar: Adverbs", q:"What does an adverb do?", choices:["Describes a noun","Describes a verb","Replaces a noun","Joins two sentences"], ans:1 },
+  { cat:"Grammar: Adverbs", q:"Adverbs can tell HOW, WHEN, or WHERE. Which word is an adverb that tells HOW in: 'We lined up quickly.'?", choices:["We","lined","up","quickly"], ans:3 },
+  { cat:"Grammar: Adverbs", q:"Which word is an adverb in: 'Zina spoke quietly.'?", choices:["Zina","spoke","quietly","the"], ans:2 },
+  { cat:"Grammar: Adverbs", q:"Which word is an adverb in: 'The cat jumped softly.'?", choices:["The","cat","jumped","softly"], ans:3 },
+  { cat:"Grammar: Adverbs", q:"Which word is an adverb in: 'Jem clapped her hands excitedly.'?", choices:["Jem","clapped","hands","excitedly"], ans:3 },
+  { cat:"Grammar: Adverbs", q:"Which word is an adverb in: 'Pete carefully stepped over the puddle.'?", choices:["Pete","carefully","stepped","puddle"], ans:1 },
+
+  // ── GRAMMAR: Adverbs — when & where ──────────────────────────────────
+  { cat:"Grammar: When & Where", q:"'The deer ran away.' Does 'away' tell WHEN or WHERE?", choices:["How","When","Where","Nothing"], ans:2 },
+  { cat:"Grammar: When & Where", q:"'Today we went to the park.' Does 'Today' tell WHEN or WHERE?", choices:["How","When","Where","Nothing"], ans:1 },
+  { cat:"Grammar: When & Where", q:"'We will be home soon.' Does 'soon' tell WHEN or WHERE?", choices:["How","When","Where","Nothing"], ans:1 },
+  { cat:"Grammar: When & Where", q:"'I bent down to see the ants.' Does 'down' tell WHEN or WHERE?", choices:["How","When","Where","Nothing"], ans:2 },
+  { cat:"Grammar: When & Where", q:"'We played inside.' Does 'inside' tell WHEN or WHERE?", choices:["How","When","Where","Nothing"], ans:2 },
+  { cat:"Grammar: When & Where", q:"'Yesterday we drove to Grandma's house.' What does 'Yesterday' tell us?", choices:["How","When","Where","Nothing"], ans:1 },
+  { cat:"Grammar: When & Where", q:"'We stood outside.' What does 'outside' tell us?", choices:["How","When","Where","Nothing"], ans:2 },
+  { cat:"Grammar: When & Where", q:"'Brad leaned over to pick a flower.' What does 'over' tell us?", choices:["How","When","Where","Nothing"], ans:2 },
+
+  // ── GRAMMAR: Adjectives vs Adverbs ───────────────────────────────────
+  { cat:"Grammar: Adj vs Adv", q:"Choose the correct word: 'The driver parked the car ___.'", choices:["careful","carefully","more careful","most careful"], ans:1 },
+  { cat:"Grammar: Adj vs Adv", q:"Choose the correct word: 'The ___ puppy opened the gate.'", choices:["cleverly","clever","cleverest","more clever"], ans:1 },
+  { cat:"Grammar: Adj vs Adv", q:"Choose the correct word: 'Tim walked ___ to the door.'", choices:["slow","slowly","slower","slowest"], ans:1 },
+  { cat:"Grammar: Adj vs Adv", q:"Choose the correct word: 'The choir sang ___.'", choices:["joyful","joyfully","more joyful","joyfullest"], ans:1 },
+  { cat:"Grammar: Adj vs Adv", q:"Choose the correct word: 'Jed has a ___ voice.'", choices:["loudly","loud","more loudly","louder"], ans:1 },
+  { cat:"Grammar: Adj vs Adv", q:"Choose the correct word: 'The spotlight shines ___.'", choices:["bright","brightly","brighter","brightest"], ans:1 },
+  { cat:"Grammar: Adj vs Adv", q:"Choose the correct word: 'We laughed ___.'", choices:["loud","loudly","louder","loudest"], ans:1 },
+  { cat:"Grammar: Adj vs Adv", q:"Choose the correct word: 'The ___ fence broke apart.'", choices:["weakly","weak","more weakly","most weakly"], ans:1 },
+  { cat:"Grammar: Adj vs Adv", q:"Choose the correct word: 'Fred spoke ___.'", choices:["calm","calmly","calmer","calmest"], ans:1 },
+  { cat:"Grammar: Adj vs Adv", q:"'The bunny hopped quickly.' Is 'quickly' an adjective or adverb?", choices:["Adjective — it describes a noun","Adverb — it describes a verb","Neither","Both"], ans:1 },
+  { cat:"Grammar: Adj vs Adv", q:"'The quick bunny hopped away.' Is 'quick' an adjective or adverb?", choices:["Adjective — it describes a noun","Adverb — it describes a verb","Neither","Both"], ans:0 },
+  { cat:"Grammar: Adj vs Adv", q:"Which sentence uses the correct word?", choices:["She is a smoothly dancer.","She is a smooth dancer.","She dances smooth.","She dances smoothest."], ans:1 },
+
+];
+
+// ── GAME STATE ────────────────────────────────────────────────────────────────
+let namePool = [], questionPool = [], usedNames = [], results = [];
+let currentName = null, currentQ = null;
+let spinning = false, answered = false;
+let totalCorrect = 0, totalWrong = 0;
+
+// ── SLOT MACHINE ──────────────────────────────────────────────────────────────
+const reel    = document.getElementById("slot-reel");
+const spinBtn = document.getElementById("spin-btn");
+let spinTimer, spinSpeed, spinCount, spinTarget, reelNames = [], reelIndex = 0;
+
+function buildReel() {
+  reelNames = [...namePool].sort(() => Math.random() - 0.5);
+  reel.innerHTML = "";
+  reelNames.forEach(n => {
+    const div = document.createElement("div");
+    div.className = "slot-item";
+    div.textContent = n;
+    reel.appendChild(div);
+  });
+  reel.style.top = "0px";
+  reelIndex = 0;
+}
+
+function stepReel() {
+  reelIndex = (reelIndex + 1) % reelNames.length;
+  reel.style.top = (-reelIndex * 72) + "px";
+}
+
+function startSpin() {
+  if (spinning || namePool.length === 0) return;
+  answered = false; spinning = true;
+  spinBtn.disabled = true;
+  document.getElementById("q-card").style.display = "none";
+  document.getElementById("chosen-name-display").textContent = "";
+  document.getElementById("feedback-text").textContent = "";
+
+  buildReel();
+  spinCount = 0;
+  spinTarget = 30 + Math.floor(Math.random() * 20);
+  spinSpeed = 40;
+
+  function tick() {
+    stepReel(); spinCount++;
+    if (spinCount >= spinTarget) spinSpeed += 30;
+    if (spinCount >= spinTarget + 5) { finishSpin(); return; }
+    spinTimer = setTimeout(tick, spinSpeed);
+  }
+  tick();
+}
+
+function finishSpin() {
+  spinning = false;
+  currentName = reelNames[reelIndex];
+  namePool = namePool.filter(n => n !== currentName);
+  usedNames.push(currentName);
+  document.getElementById("students-left").textContent = namePool.length;
+  document.getElementById("chosen-name-display").textContent = "🎯 " + currentName + " — your turn!";
+  showQuestion();
+}
+
+// ── QUESTION ──────────────────────────────────────────────────────────────────
+function showQuestion() {
+  if (questionPool.length === 0) questionPool = [...ALL_QUESTIONS].sort(() => Math.random() - 0.5);
+  currentQ = questionPool.pop();
+
+  const card = document.getElementById("q-card");
+  card.style.display = "block";
+  document.getElementById("q-category").textContent = currentQ.cat;
+  document.getElementById("q-text").textContent = currentQ.q;
+  document.getElementById("feedback-text").textContent = "";
+
+  const order = [0,1,2,3].sort(() => Math.random() - 0.5);
+  const choicesEl = document.getElementById("choices");
+  choicesEl.innerHTML = "";
+  order.forEach(origIdx => {
+    const btn = document.createElement("button");
+    btn.className = "choice";
+    btn.textContent = currentQ.choices[origIdx];
+    btn.onclick = () => selectAnswer(origIdx, btn, order);
+    choicesEl.appendChild(btn);
+  });
+  answered = false;
+}
+
+function selectAnswer(origIdx, btn, order) {
+  if (answered) return;
+  answered = true;
+  document.querySelectorAll(".choice").forEach(b => b.disabled = true);
+
+  const correct = origIdx === currentQ.ans;
+  if (correct) {
+    btn.classList.add("correct");
+    totalCorrect++;
+    document.getElementById("correct-count").textContent = totalCorrect;
+    document.getElementById("feedback-text").innerHTML =
+      '<span style="color:#86efac;font-weight:700">Correct! ⭐</span> Well done, ' + currentName + '!';
+  } else {
+    btn.classList.add("wrong");
+    document.querySelectorAll(".choice").forEach((b, i) => {
+      if (order[i] === currentQ.ans) b.classList.add("correct");
+    });
+    totalWrong++;
+    document.getElementById("wrong-count").textContent = totalWrong;
+    document.getElementById("feedback-text").innerHTML =
+      '<span style="color:#fca5a5;font-weight:700">Not quite.</span> The answer was: <strong style="color:#facc15">' + currentQ.choices[currentQ.ans] + '</strong>';
+  }
+
+  results.push({ name: currentName, q: currentQ.q, correct });
+
+  if (namePool.length === 0) {
+    spinBtn.textContent = "See Results";
+    spinBtn.disabled = false;
+    spinBtn.onclick = showStats;
+  } else {
+    spinBtn.disabled = false;
+    spinBtn.textContent = "🎰 Spin next!";
+  }
+}
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
+function showStats() {
+  document.getElementById("slot-wrap").style.display   = "none";
+  document.getElementById("q-card").style.display       = "none";
+  document.getElementById("counters").style.display     = "none";
+  document.getElementById("chosen-name-display").textContent = "";
+
+  const screen = document.getElementById("stats-screen");
+  screen.style.display = "block";
+
+  const total = results.length;
+  const correct = results.filter(r => r.correct).length;
+  document.getElementById("final-score").textContent = correct + " / " + total;
+  document.getElementById("final-sub").textContent = "correct answers across " + total + " students";
+
+  const tbody = document.getElementById("stats-body");
+  tbody.innerHTML = "";
+  results.forEach(r => {
+    const tr = document.createElement("tr");
+    const short = r.q.length > 55 ? r.q.slice(0, 52) + "…" : r.q;
+    tr.innerHTML =
+      '<td style="font-weight:600;color:#C4B5FD">' + r.name + '</td>' +
+      '<td>' + short + '</td>' +
+      '<td class="' + (r.correct ? "tick" : "cross") + '">' + (r.correct ? "✓" : "✗") + '</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+// ── RESET ─────────────────────────────────────────────────────────────────────
+function resetGame() {
+  namePool     = [...ALL_NAMES].sort(() => Math.random() - 0.5);
+  questionPool = [...ALL_QUESTIONS].sort(() => Math.random() - 0.5);
+  usedNames = []; results = [];
+  currentName = null; currentQ = null;
+  totalCorrect = 0; totalWrong = 0;
+  answered = false; spinning = false;
+
+  document.getElementById("students-left").textContent = namePool.length;
+  document.getElementById("correct-count").textContent = "0";
+  document.getElementById("wrong-count").textContent   = "0";
+  document.getElementById("chosen-name-display").textContent = "";
+
+  document.getElementById("stats-screen").style.display  = "none";
+  document.getElementById("slot-wrap").style.display     = "block";
+  document.getElementById("q-card").style.display        = "none";
+  document.getElementById("counters").style.display      = "flex";
+
+  spinBtn.textContent = "🎰 Spin!";
+  spinBtn.onclick     = startSpin;
+  spinBtn.disabled    = false;
+  buildReel();
+}
+
+spinBtn.onclick = startSpin;
+resetGame();
+</script>
+</body>
+</html>
